@@ -1,10 +1,77 @@
-// Zanim pan zacznię sprawdzać ten projekt chciałbym serdecznie podziekować Panu Mirosławowi Zelentowi to tyle z mojej strony koniec bomba a kto czytał ten trąbka.
+// Zanim Pan zacznię sprawdzać ten projekt chciałbym serdecznie podziekować Panu Mirosławowi Zelentowi to tyle z mojej strony koniec bomba a kto czytał ten trąbka.
 #include <iostream>
+#include "headerfile.h"
 #include <ctime> 
+
 using namespace std;
 double data_d[100] = { 0 };
 char data2[100] = { 0 };
 int data_count = 0;
+
+
+int pobieranieINT() {
+	char bufor[100];
+	while (true) {
+		cin >> bufor;
+
+		bool blad = false;
+		int i = 0;
+
+		if (bufor[0] == '-') {
+			if (bufor[1] == '\0') blad = true;
+			i = 1;
+		}
+
+		for (; bufor[i] != '\0'; i++) {
+			if (bufor[i] < '0' || bufor[i] > '9') {
+				blad = true;
+				break;
+			}
+		}
+
+		if (!blad) {
+			return atoi(bufor);
+		}
+		else {
+			cout << "blad, wpisz jeszcze raz: ";
+		}
+	}
+}
+
+float pobieranieMATRIX() {
+	char bufor[100];
+	while (true) {
+		cin >> bufor;
+
+		bool blad = false;
+		int kropki = 0;
+		int i = 0;
+
+		if (bufor[0] == '-') {
+			if (bufor[1] == '\0') blad = true;
+			i = 1;
+		}
+
+		for (; bufor[i] != '\0'; i++) {
+			if (bufor[i] == '.') {
+				kropki++;
+				if (kropki > 1) { blad = true; break; }
+			}
+			else if (bufor[i] < '0' || bufor[i] > '9') {
+				blad = true;
+				break;
+			}
+		}
+
+		if (!blad) {
+			return (float)atof(bufor);
+		}
+		else {
+			cout << "blad, wpisz jeszcze raz: ";
+		}
+	}
+}
+
 
 
 float FtoC(float F){
@@ -42,23 +109,100 @@ void historia (double stara, double nowa, char skalastara, char skalanowa) {
 }
 
 int check(float temp, char scale) {
-	if (scale == 'c' && temp < -273.15) return 0;
-	if (scale == 'f' && temp < -459.67) return 0;
-	if (scale == 'k' && temp < 0) return 0;
-	return 1;
+	if (scale == 'c' && temp < -273.15) return 1;
+	if (scale == 'f' && temp < -459.67) return 1;
+	if (scale == 'k' && temp < 0) return 1;
+	return 0;
 }
+void losowanie() {
+	system("cls");
+	cout << "Losowanie";
+
+	cout << "Ile losowych wpisow chcesz? ";
+	int ile;
+	cin >> ile;
+
+	if (ile <= 0) {
+		cout << "liczba musi byc dodatnia szanowny panie" << endl;
+		return;
+	}
+
+	int potrzebneMiejsce = ile * 2;
+	int wolneMiejsce = 100 - data_count;
+
+	if (potrzebneMiejsce > wolneMiejsce) {
+		cout << "Brak miejsca" << endl << "ale mozesz zapisac max :" << endl
+			<< wolneMiejsce / 2 << " wpisow" << endl;
+		cout << "Czy wygenerowac tylko tyle? (t/n): ";
+		char odp;
+		cin >> odp;
+		if (odp == 't') {
+			ile = wolneMiejsce / 2;
+		}
+		else {
+			cout << "powrot"<< endl;
+			return;
+		}
+	}
+
+	if (ile <= 0) {
+		cout << "brak miejsca :(" << endl;
+		return;
+	}
+
+	srand(time(0));
+
+	for (int i = 0; i < ile; i++) {
+		char scales[3] = { 'C', 'F', 'K' };
+		char s1 = scales[rand() % 3];
+
+		double temp;
+		if (s1 == 'C') temp = rand() % 1001 - 273;      
+		else if (s1 == 'F') temp = rand() % 1460 - 459; 
+		else temp = rand() % 1001;                      
+
+		char s2;
+		do {
+			s2 = scales[rand() % 3];
+		} while (s2 == s1);
+
+		double wynik = 0;
+
+		if (s1 == 'C' && s2 == 'F') wynik = CtoF(temp);
+		else if (s1 == 'C' && s2 == 'K') wynik = CtoK(temp);
+		else if (s1 == 'F' && s2 == 'C') wynik = FtoC(temp);
+		else if (s1 == 'F' && s2 == 'K') wynik = FtoK(temp);
+		else if (s1 == 'K' && s2 == 'C') wynik = KtoC(temp);
+		else if (s1 == 'K' && s2 == 'F') wynik = KtoF(temp);
+
+
+		data_d[data_count] = temp;
+		data2[data_count] = s1;
+		data_count++;
+
+		data_d[data_count] = wynik;
+		data2[data_count] = s2;
+		data_count++;
+	}
+
+	cout << "Dodano " << endl << ile << endl << " tyle losowych wpisow" << endl;
+}
+
+
 
 
 int main() {
 	int wybor = 0;
 
-	cout << "1. konwersja z F na C" << endl
-		<< "2. Konwersja z F na K"
-		<< endl << "3. konwersja z C  na F" << endl << "4.konwersja z C na K " << endl <<
-		"5.konwersja z K na C" << endl << "6.konwersja z K na F" << endl << "7.zakoncz dzialanie programu" << endl << "8.Historia temperatur" << endl << "9.Usun historie" << endl << "10.Modyfikacja histori" << endl << "11.Losowe" << endl;
+	
 	
 
 	while (wybor != 7) {
+		system("cls");
+		cout << "1. konwersja z F na C" << endl
+			<< "2. Konwersja z F na K"
+			<< endl << "3. konwersja z C  na F" << endl << "4.konwersja z C na K " << endl <<
+			"5.konwersja z K na C" << endl << "6.konwersja z K na F" << endl << "7.zakoncz dzialanie programu" << endl << "8.Historia temperatur" << endl << "9.Usun historie" << endl << "10.Modyfikacja histori" << endl << "11.Losowe" << endl;
 		cout << "podaj wybor: " << endl;
 		cin >> wybor;
 		switch (wybor) {
@@ -66,6 +210,10 @@ int main() {
 			float f;
 			cout << "podaj temperature w stopniach f: ";
 			cin >> f;
+			if (check(f, 'f') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed: " << f << "temperatura po konwersji w c: " << FtoC(f) << endl;
 			historia(f, FtoC(f), 'F', 'C');
 			break;
@@ -74,6 +222,10 @@ int main() {
 			float f;
 			cout << "podaj temperature w stopniach f: ";
 			cin >> f;
+			if (check(f, 'f') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed:" << f << "temperatura w stopniach K: " << FtoK(f) << endl;
 			historia(f, FtoK(f), 'F', 'K');
 			break;
@@ -82,6 +234,10 @@ int main() {
 			float c;
 			cout << "podaj temperature w stopniach k: ";
 			cin >> c;
+			if (check(c, 'c') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed:" << c << "temperatura w stopniach f: " << KtoF(c) << endl;
 			historia(c, KtoF(c), 'K', 'F');
 			break;
@@ -91,6 +247,10 @@ int main() {
 			float c;
 			cout << "podaj temperature w stopniach c: ";
 			cin >> c;
+			if (check(c, 'c') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed:" << c << "temperatura w stopniach k: " << CtoK(c) << endl;
 			historia(c, CtoK(c), 'C', 'K');
 			break;
@@ -99,6 +259,10 @@ int main() {
 			float k;
 			cout << "podaj temperature w stopniach k: ";
 			cin >> k;
+			if (check(k, 'k') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed:" << k << "temperatura w stopniach c: " << KtoC(k) << endl;
 			historia(k, KtoC(k), 'K', 'C');
 			break;
@@ -108,6 +272,10 @@ int main() {
 			float k;
 			cout << "podaj temperature w stopniach c: ";
 			cin >> k;
+			if (check(k, 'c') == 1) {
+				cout << "za niska temperatura" << endl;
+				break;
+			}
 			cout << "temperatura przed:" << k << "temperatura w stopniach f: " << CtoF(k) << endl;
 			historia(k, CtoF(k), 'C', 'F');
 			break;
@@ -135,7 +303,7 @@ int main() {
 		}
 		case 9: {
 			if (data_count == 0) {
-				cout << "Nie mam co usunąć kolego";
+				cout << "Nie mam co usunoc kolego" << endl;
 				break;
 			}
 			cout << "Historia" << endl;
@@ -157,7 +325,7 @@ int main() {
 			int lego = usun * 2 - 2;
 
 			for (int i = lego + 2; i < data_count; i++) {
-				data_d[i - 2] = data_d[i];   
+				data_d[i - 2] = data_d[i];
 				data2[i - 2] = data2[i];
 			}
 			data_count -= 2;
@@ -165,34 +333,114 @@ int main() {
 
 			break;
 
-		case 11: {
-			int losowe;
-			cout << "Ile wylosować?" << endl;
-			cin >> losowe;
-			if (data_count + losowe * 2 > 100) {
-				int wolne = (100 - data_count) / 2;
-				if (wolne == 0) {
-					cout << "Brak miejsca" << endl;
-					break;
+		}
+		case 10: {
+			system("cls");
 
-				}
-				int decyzja;
-				cout << "Nie ma miejsca" << losowe << "free miejsc" << wolne << "Ile wygenerowac?" << endl;
-				cin >> decyzja;
-			
-				if (decyzja == 1) {
-					losowe = wolne;
-				}
-				else {
-					cout << "Wrocam do menu ,elo " << endl;
-					break;
-				}
-		
-		
-		
-		
+			if (data_count == 0) {
+				cout << "brak histori" << endl;
+				break;
+			}
+
+			cout << "Historia:" << endl;
+			for (int i = 0; i < data_count; i += 2) {
+				cout << i / 2 + 1 << ". "
+					<< data_d[i] << data2[i]
+					<< " -> "
+					<< data_d[i + 1] << data2[i + 1]
+					<< endl;
+			}
+
+
+			int linia;
+			cout << "Ktory wpis chcesz zmodyfikowac? " << endl;
+			cin >> linia;
+
+			int liczbaWpisow = data_count / 2;
+			if (linia < 1 || linia > liczbaWpisow) {
+				cout << "HOLA HOLA TAKIEGO WPISU NIE MA";
+				break;
+			}
+
+			int index = (linia - 1) * 2;
+
+			float nowaTemp;
+			cout << "Podaj nowa temperature: ";
+			cin >> nowaTemp;
+
+			cout << "Podaj skale:" << endl
+				<< "1 - C" << endl
+				<< "2 - F" << endl
+				<< "3 - K" << endl;
+			int wyborSkali;
+			cin >> wyborSkali;
+
+			char skalaStart;
+			if (wyborSkali == 1) skalaStart = 'C';
+			else if (wyborSkali == 2) skalaStart = 'F';
+			else if (wyborSkali == 3) skalaStart = 'K';
+			else {
+				cout << "zla skala szanowany Panie";
+				break;
+			}
+
+			if (check(nowaTemp, skalaStart) == 1) {
+				cout << "Niepoprawna temperatura" << endl;
+				break;
+			}
+
+
+			cout << "Na co zmieniamy???" << endl
+				<< "1 - C" << endl
+				<< "2 - F" << endl
+				<< "3 - K" << endl;
+			int wyborDocelowej;
+			cin >> wyborDocelowej;
+
+			if (wyborDocelowej < 1 || wyborDocelowej > 3) {
+				cout << "Przepraszam nie jestem idealny ale zly wybor" << endl;
+				break;
+			}
+
+			char skalaKoniec;
+			float wynik;
+
+			if (skalaStart == 'C') {
+				if (wyborDocelowej == 1) { skalaKoniec = 'C'; wynik = nowaTemp; }
+				if (wyborDocelowej == 2) { skalaKoniec = 'F'; wynik = CtoF(nowaTemp); }
+				if (wyborDocelowej == 3) { skalaKoniec = 'K'; wynik = CtoK(nowaTemp); }
+			}
+			else if (skalaStart == 'F') {
+				if (wyborDocelowej == 1) { skalaKoniec = 'C'; wynik = FtoC(nowaTemp); }
+				if (wyborDocelowej == 2) { skalaKoniec = 'F'; wynik = nowaTemp; }
+				if (wyborDocelowej == 3) { skalaKoniec = 'K'; wynik = FtoK(nowaTemp); }
+			}
+			else if (skalaStart == 'K') {
+				if (wyborDocelowej == 1) { skalaKoniec = 'C'; wynik = KtoC(nowaTemp); }
+				if (wyborDocelowej == 2) { skalaKoniec = 'F'; wynik = KtoF(nowaTemp); }
+				if (wyborDocelowej == 3) { skalaKoniec = 'K'; wynik = nowaTemp; }
+			}
+
+			data_d[index] = nowaTemp;
+			data2[index] = skalaStart;
+			data_d[index + 1] = wynik;
+			data2[index + 1] = skalaKoniec;
+
+			cout << "Zmieniono wpis:" << endl
+				<< data_d[index] << data2[index]
+				<< " -> "
+				<< data_d[index + 1] << data2[index + 1]
+				<< endl;
+
+			break;
 		}
+
+
+		case 11: {
+			losowanie();
+			break;
 		}
+
 		case 7:
 			cout << "Koniec dzialania programu" << endl;
 			break;
@@ -200,11 +448,14 @@ int main() {
 			cout << "aha ,ale tego nie ma ziomuś" << endl;
 			break;
 		}
-		}
+		cout << "nacisnij enter aby kontynuowac" << endl;
+		cin.ignore();
+		cin.get();
 
 
 
 
+	}
 	}
 
 	
